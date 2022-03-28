@@ -9,34 +9,30 @@ namespace DisableCustomConnectPoint
 {
     public class DisableCustomConnectPoint : NeosMod
     {
-        public override string Name => "DisableCustomConnectPoint";
-        public override string Author => "kazu0617";
-        public override string Version => "1.1";
-        public override string Link => "https://github.com/kazu0617/DisableCustomConnectPoint/";
-        private readonly ModConfigurationKey<bool> Key_Enable = new ModConfigurationKey<bool>("enabled", "Enables this mod.", () => true);
-        private readonly ModConfigurationKey<bool> Key_Input = new ModConfigurationKey<bool>("Joke_InputAll", "Joke config. Force input all.", () => false);
-        private readonly ModConfigurationKey<bool> Key_Output = new ModConfigurationKey<bool>("Joke_OutputAll", "Joke config. Force output all.", () => false);
-        private readonly ModConfigurationKey<bool> Key_Abekonbe = new ModConfigurationKey<bool>("Joke_Abekonbe", "Joke config. Force replace from input to/from output all.", () => false);
-        public override ModConfigurationDefinition GetConfigurationDefinition()
-        {
-            List<ModConfigurationKey> keys = new List<ModConfigurationKey>();
+        public override string Name => BuildInfo.Name;
+        public override string Author => BuildInfo.Author;
+        public override string Version => BuildInfo.Version;
+        public override string Link => BuildInfo.Link;
 
-            keys.Add(Key_Enable);
-            keys.Add(Key_Input);
-            keys.Add(Key_Output);
-            keys.Add(Key_Abekonbe);
-            return DefineConfiguration(new Version(1, 1), keys);
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<bool> Key_Enable = new("enabled", "Enables this mod.", () => true);
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<bool> Key_Input = new("Joke_InputAll", "Joke config. Force input all.", () => false);
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<bool> Key_Output = new("Joke_OutputAll", "Joke config. Force output all.", () => false);
+        [AutoRegisterConfigKey]
+        private static readonly ModConfigurationKey<bool> Key_Abekonbe = new("Joke_Abekonbe", "Joke config. Force replace from input to/from output all.", () => false);
 
-        }
+        private static ModConfiguration Config;
 
         public override void OnEngineInit()
         {
-            ModConfiguration config = GetConfiguration();
-            if (!config.GetValue(Key_Enable)) return;
-            Harmony harmony = new Harmony("net.kazu0617.DisableCustomConnectPoint");
+            Config = GetConfiguration();
+            Config.Save(true);
+            if (!Config.GetValue(Key_Enable)) return;
+            Harmony harmony = new Harmony(BuildInfo.GUID);
 
             harmony.PatchAll();
-            Msg("Hooks installed successfully!");
         }
 
         [HarmonyPatch(typeof(LogixHelper), "GetSide")]
@@ -47,6 +43,10 @@ namespace DisableCustomConnectPoint
                 if (member is LogixNode)
                 {
                     __result = ConnectPointSide.Output;
+
+                    if(Config.GetValue(Key_Input) || Config.GetValue(Key_Abekonbe))
+                        __result = ConnectPointSide.Input;
+
                     return false;
                 }
                 FieldInfo fieldInfo = null;
@@ -56,16 +56,23 @@ namespace DisableCustomConnectPoint
                 if (typeof(IInputElement).IsAssignableFrom(type))
                 {
                     __result = ConnectPointSide.Input;
+
+                    if(Config.GetValue(Key_Output) || Config.GetValue(Key_Abekonbe))
+                        __result = ConnectPointSide.Output;
+
                     return false;
                 }
                 if (typeof(IOutputElement).IsAssignableFrom(type))
                 {
                     __result = ConnectPointSide.Output;
+
+                    if(Config.GetValue(Key_Input) || Config.GetValue(Key_Abekonbe))
+                        __result = ConnectPointSide.Output;
+
                     return false;
                 }
                 throw new Exception("Invalid element: " + type?.ToString());
             }
         }
-
     }
 }

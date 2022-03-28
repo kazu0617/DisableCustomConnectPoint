@@ -1,26 +1,15 @@
-﻿using System.Resources;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DisableCustomConnectPoint")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DisableCustomConnectPoint")]
-[assembly: AssemblyCopyright("Copyright ©  2021")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Setting ComVisible to false makes the types in this assembly not visible
-// to COM components.  If you need to access a type in this assembly from
-// COM, set the ComVisible attribute to true on that type.
 [assembly: ComVisible(false)]
-
-// The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("0322B2EF-7452-479D-BAE2-FCAB75033337")]
+[assembly: AssemblyTitle(DisableCustomConnectPoint.BuildInfo.Name)]
+[assembly: AssemblyDescription(DisableCustomConnectPoint.BuildInfo.Description)]
+[assembly: AssemblyCompany("net.kazu0617")]
+[assembly: AssemblyProduct(DisableCustomConnectPoint.BuildInfo.GUID)]
+[assembly: AssemblyVersion(DisableCustomConnectPoint.BuildInfo.Version)]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -32,6 +21,19 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: NeutralResourcesLanguage("ja-JP")]
+namespace DisableCustomConnectPoint
+{
+	public static class BuildInfo
+	{
+		public const string Version = "1.1.0";
+
+		public const string Name = "Disable CustomConnector for LogiX";
+		public const string Description = "disables custom input/output attributes for LogiX nodes";
+
+		public const string Author = "kazu0617";
+
+		public const string Link = "https://github.com/kazu0617/DisableCustomConnectPoint";
+
+		public const string GUID = "net.kazu0617.DisableCustomConnectPoint";
+	}
+}
